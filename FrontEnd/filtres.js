@@ -5,7 +5,7 @@ async function init() {
   function addWorksToContainer(works) {
     worksContainer.innerHTML = "";
     works.forEach((work) => {
-      const workElement = document.createElement("div");
+      const workElement = document.createElement("figure");
       workElement.innerHTML = `
     <img src="${work.imageUrl}" alt="${work.title}" />
       <figcaption>${work.title}</figcaption>
