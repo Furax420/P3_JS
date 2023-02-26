@@ -1,9 +1,11 @@
-import { openModal, galleryUpDated } from "./function.js";
+import { openModal, galleryUpDated, initFiltres } from "./function.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   galleryUpDated();
+  initFiltres();
   if (token) {
     const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
     const fixeBody = document.querySelector("body");
     const editionModeBlock = document.getElementById("edition-mode-block");
     const editionMode = document.createElement("div");
@@ -37,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logOut.addEventListener("click", () => {
       if (confirm("Se déconnecter ?")) {
         localStorage.removeItem("token");
+        localStorage.removeItem("userId");
         window.location.reload();
       }
     });
@@ -59,4 +62,11 @@ if (token) {
   console.log("Token présent dans le localstorage.");
 } else {
   console.log("Token absent du localstorage.");
+}
+const userId = localStorage.getItem("userId");
+
+if (userId) {
+  console.log("UserId présent dans le localstorage :", userId);
+} else {
+  console.log("UserId absent du localstorage.");
 }

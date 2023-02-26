@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(data);
         if (data.userId && data.token) {
           localStorage.setItem("token", data.token);
+          localStorage.setItem("userId", data.userId);
           window.location.replace("index.html");
         } else {
           document.getElementById("form-message").innerHTML =
@@ -31,9 +32,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
   if (token) {
     console.log("Token présent dans le localstorage :", token);
   } else {
     console.log("Token absent du localstorage.");
+  }
+  if (userId) {
+    console.log("UserId présent dans le localstorage :", userId);
+  } else {
+    console.log("UserId absent du localstorage.");
   }
 });

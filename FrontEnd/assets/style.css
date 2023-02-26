@@ -188,7 +188,12 @@ nav li a {
 li:hover {
   color: #b1663c;
 }
-
+.gallery > figure {
+  height: 50vh;
+}
+.gallery > figure > img {
+  height: 100%;
+}
 /* STYLE MODALE */
 
 .modal-container {
@@ -298,6 +303,9 @@ li:hover {
   padding-bottom: 38px;
 }
 
+.green-button {
+  background-color: #1d6154 !important;
+}
 #add-pictures {
   align-self: center;
   text-align: center;
@@ -376,7 +384,7 @@ li:hover {
 #image-preview {
   max-width: 150px;
   max-height: 200px;
-  padding: 5%;
+  padding: 0;
 }
 
 .title-block,
