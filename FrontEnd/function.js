@@ -1,4 +1,7 @@
+// Création d'une fonction qui remplace la partie gallery de l'HTML de base par une nouvelle gallery généré dynamiquement avec l'API
+
 export function galleryUpDated() {
+  // Sélection de la gallery, puis suppression des figure déjà présentent
   const gallery = document.querySelector(".gallery");
   gallery.querySelectorAll("figure").forEach((figure) => figure.remove());
 
@@ -12,13 +15,15 @@ export function galleryUpDated() {
         img.setAttribute("alt", work.title);
         const figcaption = document.createElement("figcaption");
         figcaption.innerText = work.title;
+        // Ajout des nouvelles figures avec les works récupérés via l'API
         figure.append(img, figcaption);
         gallery.appendChild(figure);
       });
     });
 }
-
+// Fonction de mise en place des filtres
 export async function initFiltres() {
+  // Appel à la section works de l'API
   const responseWorks = await fetch("http://localhost:5678/api/works");
   const works = await responseWorks.json();
   const worksContainer = document.querySelector(".gallery");
@@ -34,6 +39,7 @@ export async function initFiltres() {
       worksContainer.appendChild(workElement);
     });
   }
+  // Appel à la section Category de l'API
   const responseCategories = await fetch(
     "http://localhost:5678/api/categories"
   );
@@ -49,8 +55,7 @@ export async function initFiltres() {
     addWorksToContainer(works);
   });
   // Ajouter la couleur au bouton Tous au chargement de la page //
-  buttonAll.style.backgroundColor = "#1d6154";
-  buttonAll.style.color = "white";
+  buttonAll.classList.add("set-color");
   blockFilters.appendChild(buttonAll);
 
   categories.forEach((categorie) => {
@@ -64,14 +69,13 @@ export async function initFiltres() {
     // Ajouter un écouteur d'événement clic pour chaque bouton
     filtreButtons.forEach(function (button) {
       button.addEventListener("click", function () {
+        buttonAll.classList.remove("set-color");
         // Réinitialiser tous les boutons à leur forme initiale
         filtreButtons.forEach(function (b) {
-          b.style.backgroundColor = "white";
-          b.style.color = "#1d6154";
+          b.classList.remove("set-color");
         });
         // Mettre à jour le bouton cliqué en vert et le texte en blanc
-        this.style.backgroundColor = "#1d6154";
-        this.style.color = "white";
+        this.classList.add("set-color");
       });
     });
 
@@ -88,7 +92,8 @@ export async function initFiltres() {
 
 export async function openModal(token) {
   const modalContainer = document.querySelector(".modal-container");
-
+  const modalWorksContainer = document.createElement("div");
+  modalWorksContainer.className = "modal-works-container";
   const modalOverlay = document.createElement("div");
   modalOverlay.className = "overlay";
 
@@ -100,9 +105,6 @@ export async function openModal(token) {
 
   const modalTitle = document.createElement("h3");
   modalTitle.id = "modal-title";
-
-  const modalWorksContainer = document.createElement("div");
-  modalWorksContainer.className = "modal-works-container";
 
   const modalGreyBar = document.createElement("div");
   modalGreyBar.className = "grey-bar";
@@ -149,11 +151,11 @@ export async function openModal(token) {
     deleteIcon.id = `delete-icon-${work.id}`;
     deleteIcon.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
     modalWorksContainer.appendChild(workElement);
-    // Sorti de la modale en cliquant sur l'overlay ou le bouton X, suppression des éléments de modalWorksContainer avec la fonction clearModalContent
+    // Sorti de la modale en cliquant sur l'overlay ou le bouton X, suppression des éléments de modalWorksContainer avec la fonction removeModal
     workElement.appendChild(editButton);
     workElement.appendChild(deleteIcon);
-    modalClose.addEventListener("click", clearModalContent);
-    modalOverlay.addEventListener("click", clearModalContent);
+    modalClose.addEventListener("click", removeModal);
+    modalOverlay.addEventListener("click", removeModal);
     deleteIcon.addEventListener("click", async () => {
       event.stopPropagation();
       event.preventDefault();
@@ -175,27 +177,25 @@ export async function openModal(token) {
       }
     });
   }
-  function clearModalContent() {
-    // Suppression du contenu de la modale
-    while (modalWorksContainer.firstChild) {
-      modalWorksContainer.removeChild(modalWorksContainer.firstChild);
-    }
 
-    // Réinitialisation des autres éléments de la modale
-    modalTitle.innerHTML = "";
-    modalAddPictures.innerHTML = "";
-    modalDeleteButton.innerHTML = "";
-    // Remise à zéro de la modale
-    modalContainer.style.display = "none";
+  function removeModal() {
+    // Supprime la modale ainsi que son emplacement modal-container
+    if (modal) {
+      modal.remove();
+      modalOverlay.remove();
+      modalContainer.style.display = "none";
+    }
   }
+
   modalAddPictures.addEventListener("click", () => {
-    modal.innerHTML = "";
     const backButton = document.createElement("button");
     backButton.classList.add("back-button");
     backButton.innerHTML = '<i class="fa-solid fa-arrow-left-long"></i>';
     backButton.addEventListener("click", () => {
-      modal.style.display = "none";
-      clearModalContent();
+      setTimeout(() => {
+        modal.remove();
+        modalOverlay.remove();
+      }, 0);
       openModal(token);
     });
     const titleBlock = document.createElement("div");
@@ -211,13 +211,6 @@ export async function openModal(token) {
     const placeholderOption = document.createElement("option");
     placeholderOption.text = "";
     categoryMenu.add(placeholderOption);
-
-    // categoryMenu.addEventListener("click", () => {
-    //   // Vérification que placeholder existe pour éviter les messages d'erreurs
-    //   if (categoryMenu.contains(placeholderOption)) {
-    //     categoryMenu.removeChild(placeholderOption);
-    //   }
-    // });
 
     const categoryOptions = categoryMenu.options;
     let categoryNames = [];
@@ -331,6 +324,7 @@ export async function openModal(token) {
     modalConfirmAddPictures.innerHTML = "Valider";
 
     inputContainer.classList.add("input-container");
+    modalAddPictures.style.display = "none";
     modal.append(backButton);
     modal.appendChild(modalClose);
     modal.appendChild(modalTitle);
@@ -363,23 +357,23 @@ export async function openModal(token) {
       if (imageImported && title && category) {
         modalConfirmAddPictures.classList.add("green-button");
         modalGreyBar.innerHTML = "";
+        modalGreyBar.classList.remove("error-msg");
       } else {
         modalConfirmAddPictures.classList.remove("green-button");
       }
     }
     modalConfirmAddPictures.addEventListener("click", () => {
       if (!modalConfirmAddPictures.classList.contains("green-button")) {
+        modalGreyBar.classList.add("error-msg");
         modalGreyBar.innerHTML =
           "Veuillez remplir tous les champs du formulaire pour envoyer votre projet.";
-        modalGreyBar.style.textAlign = "center";
-        modalGreyBar.style.paddingTop = "10px";
       }
     });
 
     modalConfirmAddPictures.addEventListener("click", () => {
       userId = localStorage.getItem("userId");
       if (modalConfirmAddPictures.classList.contains("green-button")) {
-        postApi(imga, userId, category);
+        postApi();
         backButton.style.display = "none";
         inputContainer.innerHTML = "";
         titleBlock.innerHTML = "";
@@ -389,12 +383,12 @@ export async function openModal(token) {
       }
     });
 
-    function postApi(fileUrl, userId, categoryName) {
+    function postApi() {
       const formData = new FormData();
       const newtoken = localStorage.getItem("token");
-      formData.append("image", fileUrl);
+      formData.append("image", imga);
       formData.append("title", titleMenu.value);
-      formData.append("category", categoryName);
+      formData.append("category", category);
       formData.append("userId", userId);
       console.log(formData.values());
       fetch("http://localhost:5678/api/works", {
@@ -407,15 +401,13 @@ export async function openModal(token) {
       })
         .then((response) => {
           if (!response.ok) {
-            modalTitle.style.cssText =
-              "padding: 0; font-size: 19px; position: absolute; top: 51px;";
+            modalTitle.classList.add("api-response");
             modalTitle.innerHTML =
               "Une erreur est survenue lors de la requête.";
 
             throw new Error("Une erreur est survenue lors de la requête.");
           }
-          modalTitle.style.cssText =
-            "padding: 0; font-size: 19px; position: absolute; top: 51px;";
+          modalTitle.classList.add("api-response");
           modalTitle.innerHTML = "Votre photo a correctement été ajoutée !";
           galleryUpDated();
           return response.json();
@@ -426,9 +418,6 @@ export async function openModal(token) {
         .catch((error) => {
           console.error(error);
         });
-
-      // Révoquer l'URL
-      URL.revokeObjectURL(fileUrl);
     }
   });
 }
