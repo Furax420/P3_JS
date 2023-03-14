@@ -248,7 +248,6 @@ li > a:hover {
 .modal::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 3px;
-  scroll-margin: 30px;
 }
 
 .close-modal {
@@ -337,7 +336,7 @@ li > a:hover {
   background-color: #1d6154;
   cursor: pointer;
   font-family: "Syne";
-  padding: 0 3em;
+  padding: 8px;
   font-weight: 700;
   font-size: 14px;
   border: 2px solid #1d6154;
@@ -450,14 +449,14 @@ select {
   color: white;
   cursor: pointer;
   font-family: "Syne";
-  padding: 0em 3em;
+  padding: 8px;
   font-weight: 700;
   font-size: 14px;
   border: 0px;
   border-radius: 60px;
   width: 25%;
   min-width: 200px;
-  height: 3vh;
+  height: 36px;
   margin-bottom: 23px;
 }
 .set-color {
