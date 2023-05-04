@@ -1,4 +1,3 @@
 [build]
- base = "Backend"
   command = "npm install" 
   publish = "FrontEnd"
